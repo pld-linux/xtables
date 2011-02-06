@@ -24,7 +24,6 @@ Source2:	iptables.init
 Source3:	ip6tables.init
 %if %{with dist_kernel} && %{netfilter_snap} != 0
 BuildRequires:	kernel%{_alt_kernel}-headers(netfilter) >= %{netfilter_snap}
-BuildRequires:	kernel%{_alt_kernel}-source
 %endif
 BuildConflicts:	kernel-headers < 2.3.0
 Provides:	firewall-userspace-tool
@@ -89,12 +88,11 @@ xtables(8).
 
 %build
 %configure \
-	--with-kbuild=%{_kernelsrcdir} \
-	--with-ksource=%{_kernelsrcdir} \
-	--enable-devel \
+	--with-kernel=%{_kernelsrcdir} \
 	--enable-libipq \
 	--enable-shared
-%{__make}
+%{__make} \
+	V=1
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -132,15 +130,24 @@ fi
 %attr(755,root,root) %{_sbindir}/ip6tables-save
 %dir %{_libdir}/xtables
 %attr(755,root,root) %{_libdir}/xtables/*.so
-%{_mandir}/man8/*
+%{_mandir}/man8/ip6tables.8*
+%{_mandir}/man8/ip6tables-restore.8*
+%{_mandir}/man8/ip6tables-save.8*
+%{_mandir}/man8/iptables.8*
+%{_mandir}/man8/iptables-restore.8*
+%{_mandir}/man8/iptables-save.8*
+%{_mandir}/man8/iptables-xml.8*
 
 %files devel
 %defattr(644,root,root,755)
-%{_libdir}/lib*.a
-%{_includedir}/*.h
-%dir %{_includedir}/libip*
-%{_includedir}/libip*/*.h
-%{_mandir}/man3/*
+%{_libdir}/libipq.a
+%{_includedir}/ip6tables.h
+%{_includedir}/iptables.h
+%{_includedir}/libipq.h
+%{_includedir}/xtables.h
+%{_includedir}/libiptc
+%{_mandir}/man3/ipq_*.3*
+%{_mandir}/man3/libipq.3*
 
 %files init
 %defattr(644,root,root,755)
